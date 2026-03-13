@@ -38,14 +38,18 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
 
-        ProvisionedUserResult result = authProvisioningService.handleGoogleLogin(googleSub, email, name, picture);
         try {
-            if (result.getRoleCode() == RoleCode.STUDENT) {
-                response.sendRedirect("/portal-dashboard");
-            } else {
-                response.sendRedirect("/admin-dashboard");
-            }
-        }catch(AccessDeniedException | UserProvisioningException ex) {
+            ProvisionedUserResult result = authProvisioningService.handleGoogleLogin(googleSub, email, name, picture);
+            String redirectUrl = switch (result.getRoleCode()) {
+                case STUDENT -> "/student/dashboard";
+                case FACULTY -> "/faculty/dashboard";
+                case REGISTRAR -> "/registrar/dashboard";
+                case BUSINESS_OFFICE -> "/businessOffice/dashboard";
+                case ADMIN -> "/superAdmin/dashboard";
+                default -> throw new AccessDeniedException("Access denied for role: " + result.getRoleCode());
+            };
+            response.sendRedirect(redirectUrl);
+        } catch (AccessDeniedException | UserProvisioningException ex) {
             String message = URLEncoder.encode(ex.getMessage(), StandardCharsets.UTF_8);
             response.sendRedirect("/login?error=" + message);
         }

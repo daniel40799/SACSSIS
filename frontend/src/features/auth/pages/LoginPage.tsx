@@ -1,18 +1,18 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Alert, Button, Card, Checkbox } from '@/components';
 
-type FlashMessage = {
-  title: string;
-  body: string;
-};
-
-interface LoginPageProps {
-  message?: FlashMessage;
-  onGoogleSignIn?: () => void;
-}
-
-export default function LoginPage({ message, onGoogleSignIn }: LoginPageProps) {
+export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
+  const [searchParams] = useSearchParams();
+  const errorParam = searchParams.get('error');
+  const message = errorParam
+    ? { title: 'Authentication failed', body: decodeURIComponent(errorParam) }
+    : null;
+
+  function handleGoogleSignIn() {
+    window.location.href = '/oauth2/authorization/google';
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -52,7 +52,7 @@ export default function LoginPage({ message, onGoogleSignIn }: LoginPageProps) {
                   type="button"
                   variant="secondary"
                   size="lg"
-                  onClick={onGoogleSignIn}
+                  onClick={handleGoogleSignIn}
                   className="w-full justify-center text-gray-500"
                   leadingIcon={(
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" aria-hidden="true">
