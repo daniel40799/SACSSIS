@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { MagnifyingGlassIcon, ShoppingBagIcon } from '@heroicons/react/24/outline'
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
+import { Popover as HeadlessPopover, PopoverButton, PopoverPanel } from '@headlessui/react'
 
 export interface NavItem {
   name: string;
@@ -23,7 +23,7 @@ export interface PopoverProps {
   className?: string;
 }
 
-export function Popover({
+export function ShoppingCartPopover({
   navigation = [],
   products = [],
   className,
@@ -63,7 +63,7 @@ export function Popover({
               </a>
 
               {/* Cart */}
-              <Popover className="ml-4 flow-root text-sm lg:relative lg:ml-8">
+              <HeadlessPopover className="ml-4 flow-root text-sm lg:relative lg:ml-8">
                 <PopoverButton className="group -m-2 flex items-center p-2">
                   <ShoppingBagIcon
                     aria-hidden="true"
@@ -111,7 +111,7 @@ export function Popover({
                     </p>
                   </form>
                 </PopoverPanel>
-              </Popover>
+              </HeadlessPopover>
             </div>
           </div>
         </div>
@@ -120,4 +120,5 @@ export function Popover({
   );
 }
 
-export default Popover;
+export default ShoppingCartPopover;
+

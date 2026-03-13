@@ -21,13 +21,12 @@ export function CheckboxTable({
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState([]);
 
-  const checkbox = useRef<HTMLDivElement>(null);
+  const checkbox = useRef<HTMLInputElement>(null);
 
   function classNames(...classes: string[]): string {
     return classes.filter(Boolean).join(' ');
   }
 
-  const checkbox =  useRef();
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
