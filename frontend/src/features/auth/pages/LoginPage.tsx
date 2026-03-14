@@ -1,18 +1,39 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Alert, Button, Card, Checkbox } from '@/components';
 
-type FlashMessage = {
-  title: string;
-  body: string;
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  ACCOUNT_NOT_FOUND:
+    'Your account is not registered in the student portal. Please contact the registrar.',
+  ACCOUNT_INACTIVE:
+    'Your account is inactive. You may have dropped or graduated. Please contact the registrar.',
+  UNAUTHORIZED_DOMAIN:
+    'Please use your official SACS school email address to sign in.',
+  UNAUTHORIZED_USER:
+    'This email is not registered in the system. Only authorized SACS users may access this portal.',
+  PROVISIONING_FAILED:
+    'We were unable to set up your account. Please contact the IT support team.',
+  LOGIN_ERROR:
+    'Sign-in failed. Please try again or contact support if the problem persists.',
 };
 
-interface LoginPageProps {
-  message?: FlashMessage;
-  onGoogleSignIn?: () => void;
-}
+const DEFAULT_ERROR_MESSAGE =
+  'An unexpected error occurred. Please try again.';
 
-export default function LoginPage({ message, onGoogleSignIn }: LoginPageProps) {
+export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
+  const [searchParams] = useSearchParams();
+  const errorCode = searchParams.get('error');
+  const errorBody = errorCode
+    ? (AUTH_ERROR_MESSAGES[errorCode] ?? DEFAULT_ERROR_MESSAGE)
+    : null;
+  const message = errorBody
+    ? { title: 'Sign-in failed', body: errorBody }
+    : null;
+
+  function handleGoogleSignIn() {
+    window.location.assign('/oauth2/authorization/google');
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -52,7 +73,7 @@ export default function LoginPage({ message, onGoogleSignIn }: LoginPageProps) {
                   type="button"
                   variant="secondary"
                   size="lg"
-                  onClick={onGoogleSignIn}
+                  onClick={handleGoogleSignIn}
                   className="w-full justify-center text-gray-500"
                   leadingIcon={(
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" aria-hidden="true">

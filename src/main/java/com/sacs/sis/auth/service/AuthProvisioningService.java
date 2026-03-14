@@ -10,6 +10,7 @@ import com.sacs.sis.auth.repository.UserAccountRoleRepository;
 import com.sacs.sis.faculty.domain.Faculty;
 import com.sacs.sis.faculty.repository.FacultyRepository;
 import com.sacs.sis.shared.exception.AccessDeniedException;
+import com.sacs.sis.shared.exception.AuthErrorCode;
 import com.sacs.sis.shared.exception.UserProvisioningException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,8 @@ public class AuthProvisioningService {
         ResolvedLogin resolvedLogin = studentAccountResolver.resolve(email)
                 .or(() -> staffAccountResolver.resolve(email))
                 .orElseThrow(() -> new AccessDeniedException(
-                        "This portal is exclusively for authorized SACS users only."
+                        "This portal is exclusively for authorized SACS users only.",
+                        AuthErrorCode.UNAUTHORIZED_USER
                 ));
 
         UserAccount userAccount = userAccountRepository.findByEmail(email)
@@ -92,7 +94,7 @@ public class AuthProvisioningService {
         String normalizedDomain = "@" + allowedDomain.toLowerCase(Locale.ROOT);
 
         if (!normalizedEmail.endsWith(normalizedDomain)) {
-            throw new AccessDeniedException("Unauthorized email domain.");
+            throw new AccessDeniedException("Unauthorized email domain.", AuthErrorCode.UNAUTHORIZED_DOMAIN);
         }
     }
 

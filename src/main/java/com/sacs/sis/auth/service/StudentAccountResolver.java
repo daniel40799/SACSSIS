@@ -4,6 +4,7 @@ import com.sacs.sis.auth.domain.RoleCode;
 import com.sacs.sis.students.domain.Student;
 import com.sacs.sis.students.repository.StudentRepository;
 import com.sacs.sis.shared.exception.AccessDeniedException;
+import com.sacs.sis.shared.exception.AuthErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,14 @@ public class StudentAccountResolver {
 
         Student student = studentRepository.findBySchoolId(localPart)
                 .orElseThrow(() -> new AccessDeniedException(
-                        "This account does not exist in the list of students."
+                        "This account does not exist in the list of students.",
+                        AuthErrorCode.ACCOUNT_NOT_FOUND
                 ));
 
         if (!"ACTIVE".equalsIgnoreCase(student.getStatus())) {
             throw new AccessDeniedException(
-                    "This account is not active. You may have dropped or graduated."
+                    "This account is not active. You may have dropped or graduated.",
+                    AuthErrorCode.ACCOUNT_INACTIVE
             );
         }
 
